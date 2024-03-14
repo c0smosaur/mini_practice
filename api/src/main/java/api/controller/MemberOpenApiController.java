@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberOpenApiController {
 
 
-    @PostMapping("/register")
-    public
+//    @PostMapping("/register")
+//    public
 
 }

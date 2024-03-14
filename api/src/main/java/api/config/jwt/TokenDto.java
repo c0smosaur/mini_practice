@@ -1,18 +1,17 @@
-package api.model;
+package api.config.jwt;
 
-import db.enums.MemberStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberResponse {
-
-    private Long id;
-    private String username;
-    private MemberStatus status;
+public class TokenDto {
+    private String token;
+    private LocalDateTime expiredAt;
 }

@@ -1,9 +1,7 @@
 package db.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import db.enums.MemberStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,20 +14,21 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @Entity
+@Table(name="member")
 public class MemberEntity extends BaseEntity{
 
     // email
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     @Enumerated(value = EnumType.STRING)
-    private String status;
+    private MemberStatus status;
 
 }
