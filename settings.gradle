@@ -1,0 +1,4 @@
+rootProject.name = 'mini'
+include 'db'
+include 'api'
+
