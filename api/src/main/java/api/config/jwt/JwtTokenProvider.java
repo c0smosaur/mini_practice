@@ -1,5 +1,6 @@
 package api.config.jwt;
 
+import api.common.error.TokenErrorCode;
 import api.common.exception.ResultException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -9,6 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
@@ -18,15 +20,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Service
 @RequiredArgsConstructor
 public class JwtTokenProvider{
 
     @Value("${token.secret.key}")
-    private final String SECRET_KEY;
+    private String SECRET_KEY;
     @Value("${token.accessToken.plus-hour}")
-    private final Long ACCESS_TOKEN_PLUS_HOUR;
+    private Long ACCESS_TOKEN_PLUS_HOUR;
     @Value("${token.refreshToken.plus-hour}")
-    private final Long REFRESH_TOKEN_PLUS_HOUR;
+    private Long REFRESH_TOKEN_PLUS_HOUR;
 
     SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
@@ -36,7 +39,7 @@ public class JwtTokenProvider{
         ).toInstant());
     }
 
-    public TokenDto generateAccessToken(Map<String, Objects> data){
+    public TokenDto generateAccessToken(Map<String, Object> data){
 
         LocalDateTime expiredAt = LocalDateTime.now().plusHours(ACCESS_TOKEN_PLUS_HOUR);
 
@@ -54,7 +57,7 @@ public class JwtTokenProvider{
                 .build();
     }
 
-    public TokenDto generateRefreshToken(Map<String, Objects> data){
+    public TokenDto generateRefreshToken(Map<String, Object> data){
 
         LocalDateTime expiredAt = LocalDateTime.now().plusHours(REFRESH_TOKEN_PLUS_HOUR);
 
@@ -76,17 +79,16 @@ public class JwtTokenProvider{
         JwtParser parser = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build();
-
         try {
             var result = parser.parseClaimsJws(token);
             return new HashMap<String, Object>(result.getBody());
         } catch (Exception e){
             if (e instanceof SignatureException){
-                throw new ResultException();
+                throw new ResultException(TokenErrorCode.INVALID_TOKEN);
             } else if (e instanceof ExpiredJwtException){
-                throw new ResultException();
+                throw new ResultException(TokenErrorCode.EXPIRED_TOKEN);
             } else {
-                throw new ResultException();
+                throw new ResultException(TokenErrorCode.TOKEN_EXCEPTION);
             }
         }
     }

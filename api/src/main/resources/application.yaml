@@ -18,7 +18,7 @@ spring:
 
 token:
   secret:
-    key: MiniProjectPracticeJWTSecretKey1234567890!
+    key: MiniProjectPracticeJWTSecretKey1234567890!abcdefghijklmnopqrstuvwxyz
   accessToken:
     plus-hour: 3
   refreshToken:
