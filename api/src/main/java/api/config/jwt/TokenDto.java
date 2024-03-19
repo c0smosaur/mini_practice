@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class TokenDto {
-    private String token;
-    private LocalDateTime expiredAt;
+    private String accessToken;
+    private LocalDateTime accessExpiredAt;
+    private String refreshToken;
+    private LocalDateTime refreshExpiredAt;
 }

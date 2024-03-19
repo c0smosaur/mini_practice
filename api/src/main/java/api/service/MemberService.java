@@ -4,11 +4,11 @@ import api.common.error.GeneralErrorCode;
 import api.common.exception.ResultException;
 import api.config.jwt.JwtTokenProvider;
 import api.config.jwt.TokenDto;
-import api.config.jwt.TokenResponse;
 import api.converter.MemberConverter;
 import api.model.MemberLoginRequest;
+import api.model.MemberLoginResponse;
 import api.model.MemberRegisterRequest;
-import api.model.MemberResponse;
+import api.model.MemberRegisterResponse;
 import db.entity.MemberEntity;
 import db.enums.MemberStatus;
 import db.repository.MemberRepository;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,10 +29,10 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberResponse register(MemberRegisterRequest request) {
+    public MemberRegisterResponse register(MemberRegisterRequest request) {
         MemberEntity entity = memberConverter.toEntity(request);
         MemberEntity newEntity = registerMember(entity);
-        MemberResponse response = memberConverter.toResponse(newEntity);
+        MemberRegisterResponse response = memberConverter.toResponse(newEntity);
 
         return response;
     }
@@ -49,26 +48,29 @@ public class MemberService {
                 .orElseThrow(() -> new ResultException(GeneralErrorCode.NULL_POINT));
     }
 
-    public TokenResponse signIn(MemberLoginRequest request) {
-
-    }
-
-    public TokenResponse memberSignIn(MemberLoginRequest request){
+    public MemberLoginResponse memberSignIn(MemberLoginRequest request){
         MemberEntity entity = memberRepository.findFirstByUsernameAndStatus(
-                request.getUsername(), MemberStatus.REGISTERED)
+                        request.getUsername(),
+                        MemberStatus.REGISTERED)
                 .filter(it -> passwordEncoder.matches(request.getPassword(), it.getPassword()))
                 .orElseThrow(() -> new ResultException(GeneralErrorCode.NULL_POINT));
 
         Map<String, Object> data = new HashMap<>();
-        data.put("username",request.getUsername());
-        data.put("password", request.getPassword());
+        data.put("username",entity.getUsername());
+        data.put("password", entity.getPassword());
 
-        TokenDto accessToken = jwtTokenProvider.generateAccessToken(data);
-        TokenDto refreshToken = jwtTokenProvider.generateRefreshToken(data);
+        TokenDto token = jwtTokenProvider.generateToken(data);
 
-        // TODO validate token and return tokenresponse
-        // TODO create filter to authenticate jwt
-//        return
+        jwtTokenProvider.validateTokenAndThrow(token.getAccessToken());
+
+        return MemberLoginResponse.builder()
+                .id(entity.getId())
+                .username(entity.getUsername())
+                .status(entity.getStatus())
+                .type(entity.getType())
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
+                .build();
     }
 
 }

@@ -1,6 +1,7 @@
 package db.entity;
 
 import db.enums.MemberStatus;
+import db.enums.MemberType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class MemberEntity extends BaseEntity{
     @Column(nullable = false, length = 100)
     private String username;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 100)
     private String password;
 
     @Column(nullable = false, length = 50)
@@ -30,5 +31,9 @@ public class MemberEntity extends BaseEntity{
     @Column(nullable = false, length = 50)
     @Enumerated(value = EnumType.STRING)
     private MemberStatus status;
+
+    @Column(nullable = false, length = 45)
+    @Enumerated(value = EnumType.STRING)
+    private MemberType type;
 
 }

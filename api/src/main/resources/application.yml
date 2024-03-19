@@ -12,14 +12,13 @@ spring:
     username: root
     password: root1234!!
 
-  security:
-    user:
-      password: 1
+security:
+  user:
+    password: 1
 
-token:
-  secret:
-    key: MiniProjectPracticeJWTSecretKey1234567890!abcdefghijklmnopqrstuvwxyz
+jwt:
   accessToken:
     plus-hour: 3
   refreshToken:
     plus-hour: 12
+  secretKey: MiniProjectPracticeJWTSecretKey1234567890
